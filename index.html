@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NAHIA HOME · Management Portal Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F7F4EE;
+      --card: #FFFFFF;
+      --card-hover: #FCFAF6;
+      --ink: #1C1916;
+      --muted: #787065;
+      --line: #E5DFD4;
+      --line-subtle: #EEE9E0;
+      --accent: #3A4436; /* Olive Westwing */
+      --accent-hover: #2B3328;
+      --gold: #9A7B4F;
+      --pos: #2F5D41;
+      --pos-bg: #E7F0E9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Auth Overlay */
+    #loginOverlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .loginBox {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 44px 38px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 16px 40px rgba(28, 25, 22, 0.05);
+      text-align: center;
+    }
+    .login-brand {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .login-sub {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 24px;
+    }
+    .loginBox input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      font-size: 14px;
+      background: #FAFAFA;
+      color: var(--ink);
+      outline: none;
+      margin-bottom: 14px;
+      transition: border-color 0.15s ease;
+    }
+    .loginBox input:focus {
+      border-color: var(--accent);
+      background: #FFF;
+    }
+    .loginBox button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      color: #FFF;
+      border: none;
+      border-radius: 9px;
+      font-weight: 600;
+      font-size: 13.5px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .loginBox button:hover {
+      background: var(--accent-hover);
+    }
+    .loginBox .err {
+      color: #B8473A;
+      font-size: 12px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* Top Suite Navigation */
+    .top-bar {
+      border-bottom: 1px solid var(--line);
+      background: var(--card);
+      padding: 14px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--pos);
+      display: inline-block;
+      box-shadow: 0 0 0 3px rgba(47, 93, 65, 0.15);
+    }
+    .top-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .top-right a {
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .top-right a:hover {
+      color: var(--accent);
+    }
+
+    /* Hero */
+    .hero {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 56px 28px 36px;
+      text-align: center;
+    }
+    .hero-kicker {
+      font-size: 11px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(38px, 5.5vw, 54px);
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .hero-subtitle {
+      font-size: 14.5px;
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* Dashboards Grid */
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto 60px;
+      padding: 0 28px;
+      flex: 1;
+      width: 100%;
+    }
+    .dashboards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    .dash-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s, border-color 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .dash-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(28, 25, 22, 0.06);
+      border-color: #D3C9BA;
+      background: var(--card-hover);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .card-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--bg);
+      border: 1px solid var(--line-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .card-tag {
+      font-size: 10.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 99px;
+      background: var(--pos-bg);
+      color: var(--pos);
+    }
+    .card-tag.studio {
+      background: #F4EFEB;
+      color: var(--gold);
+    }
+
+    .card-pillar {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .card-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 27px;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      letter-spacing: 0.02em;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 24px;
+      min-height: 58px;
+    }
+
+    .card-tags-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 26px;
+    }
+    .mini-chip {
+      font-size: 11px;
+      padding: 3px 8px;
+      background: #F6F3ED;
+      border: 1px solid var(--line-subtle);
+      border-radius: 6px;
+      color: var(--muted);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--line-subtle);
+      padding-top: 18px;
+      margin-top: auto;
+    }
+    .cadence-info {
+      font-size: 11.5px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-enter {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: gap 0.15s ease;
+    }
+    .dash-card:hover .btn-enter {
+      gap: 8px;
+    }
+
+    /* Resources Row */
+    .resources-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-top: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+    }
+    .resources-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .resource-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .res-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      padding: 7px 14px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+    .res-link:hover {
+      background: #FFF;
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--line);
+      background: var(--card);
+      padding: 20px 36px;
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 960px) {
+      .dashboards-grid { grid-template-columns: 1fr; }
+      .card-desc { min-height: auto; }
+      .top-bar { padding: 12px 20px; }
+      .wrap { padding: 0 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Single Auth Overlay -->
+  <div id="loginOverlay">
+    <div class="loginBox">
+      <div class="login-brand">N A H I A &nbsp; H O M E</div>
+      <div class="login-sub">Internal Management Suite · 3 Dashboards</div>
+      <form onsubmit="handleLogin(event)">
+        <input type="password" id="pwdInput" placeholder="Introduce la contraseña" autocomplete="current-password" autofocus required>
+        <button type="submit">Acceder al Portal</button>
+        <div id="loginErr" class="err">Contraseña incorrecta</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Suite Top Bar -->
+  <header class="top-bar">
+    <div class="top-left">
+      <span class="status-dot"></span>
+      <span class="top-title">NAHIA HOME · SUITE CLOUD</span>
+    </div>
+    <div class="top-right">
+      <span>Madrid: <b id="clockMadrid">--:--</b></span>
+      <a href="https://nahiahome.com" target="_blank" rel="noopener">nahiahome.com ↗</a>
+      <a href="#" onclick="logout(); return false;" style="color:var(--muted); font-size:11px;">Cerrar sesión</a>
+    </div>
+  </header>
+
+  <!-- Hero Header -->
+  <section class="hero">
+    <div class="hero-kicker">COMMAND &amp; OPERATIONS CENTER</div>
+    <h1 class="hero-title">Nahia Home Hub</h1>
+    <p class="hero-subtitle">
+      Acceso centralizado a los 3 cuadros de mando operativos de la marca: rentabilidad P&amp;L en tiempo real, laboratorio publicitario A/B y estudio de contenido editorial.
+    </p>
+  </section>
+
+  <!-- 3 Dashboards Grid -->
+  <main class="wrap">
+    <div class="dashboards-grid">
+
+      <!-- Card 1: P&L -->
+      <a class="dash-card" href="https://josemiguelotaduy-ctrl.github.io/nahia-dashboard/">
+        <div>
+          <div class="card-header">
+            <div class="card-icon-wrap">📈</div>
+            <span class="card-tag">Operaciones</span>
+          </div>
+          <div class="card-pillar">FINANZAS &amp; RENTABILIDAD</div>
+          <h2 class="card-title">P&amp;L Dashboard</h2>
+          <p class="card-desc">
+            Cuenta de resultados diaria, ventas netas de Shopify, facturación PayPal, inversión Meta Ads consolidada y cálculo de Blended ROAS por país y producto.
+          </p>
+          <div class="card-tags-list">
+            <span class="mini-chip">Shopify GraphQL</span>
+            <span class="mini-chip">Meta Insights</span>
+            <span class="mini-chip">PayPal API</span>
+            <span class="mini-chip">Margen Neto</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="cadence-info">
+            <span class="status-dot"></span>
+            Sync diario 09:00
+          </div>
+          <span class="btn-enter">Abrir P&amp;L →</span>
+        </div>
+      </a>
+
+      <!-- Card 2: Ads Test Lab -->
+      <a class="dash-card" href="https://josemiguelotaduy-ctrl.github.io/nahia-ads-test/">
+        <div>
+          <div class="card-header">
+            <div class="card-icon-wrap">🎯</div>
+            <span class="card-tag">Adquisición</span>
+          </div>
+          <div class="card-pillar">PERFORMANCE MARKETING</div>
+          <h2 class="card-title">Ads Test Lab</h2>
+          <p class="card-desc">
+            Laboratorio de pruebas A/B de Google Shopping (Arm A vs Arm B), Google Search (6 marcas de lujo) y creatividades Meta Ads con techo estricto de 1.000 €/mes.
+          </p>
+          <div class="card-tags-list">
+            <span class="mini-chip">Google Shopping</span>
+            <span class="mini-chip">Search Exact Match</span>
+            <span class="mini-chip">Meta Advantage+</span>
+            <span class="mini-chip">Control 1.000 €</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="cadence-info">
+            <span class="status-dot"></span>
+            Sync diario + Telegram
+          </div>
+          <span class="btn-enter">Abrir Ads Lab →</span>
+        </div>
+      </a>
+
+      <!-- Card 3: Editorial Social Studio -->
+      <a class="dash-card" href="https://josemiguelotaduy-ctrl.github.io/nahia-social-studio/">
+        <div>
+          <div class="card-header">
+            <div class="card-icon-wrap">🎞️</div>
+            <span class="card-tag studio">Editorial &amp; Social</span>
+          </div>
+          <div class="card-pillar">CONTENIDO ORGÁNICO</div>
+          <h2 class="card-title">Social Studio</h2>
+          <p class="card-desc">
+            Plan editorial de 7 días (Instagram Carousels y TikTok/Reels en 9:16). Previsualización interactiva de slides, video live-action, copys de lujo y descarga directa en HD.
+          </p>
+          <div class="card-tags-list">
+            <span class="mini-chip">Semana 1 Lista</span>
+            <span class="mini-chip">Estilo Westwing</span>
+            <span class="mini-chip">Reels 9:16</span>
+            <span class="mini-chip">Carousels 4 Slides</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="cadence-info">
+            <span class="status-dot"></span>
+            7 Días listos
+          </div>
+          <span class="btn-enter">Abrir Studio →</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Direct External Shortcuts -->
+    <div class="resources-card">
+      <div class="resources-title">Accesos Rápidos a Plataformas</div>
+      <div class="resource-links">
+        <a class="res-link" href="https://admin.shopify.com" target="_blank" rel="noopener">
+          <span>🛍️</span> Shopify Admin
+        </a>
+        <a class="res-link" href="https://adsmanager.facebook.com" target="_blank" rel="noopener">
+          <span>📱</span> Meta Ads Manager
+        </a>
+        <a class="res-link" href="https://ads.google.com" target="_blank" rel="noopener">
+          <span>🔍</span> Google Ads Console
+        </a>
+        <a class="res-link" href="https://aistudio.google.com" target="_blank" rel="noopener">
+          <span>✨</span> Google AI Studio
+        </a>
+        <a class="res-link" href="https://nahiahome.com" target="_blank" rel="noopener">
+          <span>🏠</span> Tienda Online
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    NAHIA HOME · Arquitectura y Objetos para la Mesa y el Hogar · Madrid, 2026
+  </footer>
+
+  <script>
+    const AUTH_HASH = "3f9fe0cf8466ed9e8e396636892f82d9e7e26b86c974f012efa21dd85d87296d"; // nahia2026
+
+    async function sha256(str) {
+      const buf = new TextEncoder().encode(str);
+      const hashBuf = await crypto.subtle.digest("SHA-256", buf);
+      return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function checkAuth() {
+      const saved = localStorage.getItem("nahia_auth");
+      if (saved === AUTH_HASH) {
+        document.getElementById("loginOverlay").style.display = "none";
+      } else {
+        document.getElementById("loginOverlay").style.display = "flex";
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const val = document.getElementById("pwdInput").value;
+      const hash = await sha256(val);
+      if (hash === AUTH_HASH) {
+        localStorage.setItem("nahia_auth", hash);
+        document.getElementById("loginOverlay").style.display = "none";
+      } else {
+        document.getElementById("loginErr").style.display = "block";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("nahia_auth");
+      location.reload();
+    }
+
+    function updateMadridClock() {
+      const now = new Date();
+      const options = { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hour12: false };
+      const timeStr = new Intl.DateTimeFormat('es-ES', options).format(now);
+      document.getElementById('clockMadrid').textContent = timeStr;
+    }
+
+    checkAuth();
+    updateMadridClock();
+    setInterval(updateMadridClock, 30000);
+  </script>
+</body>
+</html>
