@@ -310,9 +310,98 @@
       .top-bar { padding: 12px 20px; }
       .wrap { padding: 0 18px; }
     }
-  </style>
+  
+    /* Auth Overlay */
+    #loginOverlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .loginBox {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 44px 38px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 16px 40px rgba(28, 25, 22, 0.05);
+      text-align: center;
+    }
+    .login-brand {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .login-sub {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 24px;
+    }
+    .loginBox input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      font-size: 14px;
+      background: #FAFAFA;
+      color: var(--ink);
+      outline: none;
+      margin-bottom: 14px;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease;
+    }
+    .loginBox input:focus {
+      border-color: var(--accent);
+      background: #FFF;
+    }
+    .loginBox button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      color: #FFF;
+      border: none;
+      border-radius: 9px;
+      font-weight: 600;
+      font-size: 13.5px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .loginBox button:hover {
+      background: var(--accent-hover);
+    }
+    .loginBox .err {
+      color: #B8473A;
+      font-size: 12px;
+      margin-top: 12px;
+      display: none;
+    }
+
+</style>
 </head>
 <body>
+
+  <!-- Portal Auth Overlay -->
+  <div id="loginOverlay">
+    <div class="loginBox">
+      <div class="login-brand">N A H I A &nbsp; H O M E</div>
+      <div class="login-sub">Internal Management Suite · Portal Hub</div>
+      <form onsubmit="handleLogin(event)">
+        <input type="password" id="pwdInput" placeholder="Introduce la contraseña" autocomplete="current-password" autofocus required>
+        <button type="submit">Acceder al Portal</button>
+        <div id="loginErr" class="err">Contraseña incorrecta</div>
+      </form>
+    </div>
+  </div>
+
 
   
 
@@ -324,6 +413,7 @@
     </div>
     <div class="top-right">
       <span>Madrid: <b id="clockMadrid">--:--</b></span>
+      <a href="#" onclick="logout(); return false;" style="color:var(--muted); font-size:11px;">Cerrar sesión</a>
       </div>
   </header>
 
@@ -345,7 +435,7 @@
         <div>
           <div class="card-header">
             <div class="card-icon-wrap">📈</div>
-            <span class="card-tag" style="background:#E7F0E9; color:#2F5D41;">Acceso Libre</span>
+            <span class="card-tag" style="background:#FBF1E6; color:#8C581E;">🔒 Clave: nahia2026</span>
           </div>
           <div class="card-pillar">FINANZAS &amp; RENTABILIDAD</div>
           <h2 class="card-title">P&amp;L Dashboard</h2>
@@ -461,6 +551,48 @@
       const timeStr = new Intl.DateTimeFormat('es-ES', options).format(now);
       document.getElementById('clockMadrid').textContent = timeStr;
     }
+
+    const PORTAL_VALID = [
+      "3f9fe0cf8466ed9e8e396636892f82d9e7e26b86c974f012efa21dd85d87296d", // nahia2026
+      "8961fada71905662d5c797ed24ce9060935413c0f2f8b9d3787ad0e1ed5141a1", // Nahia2026
+      "0450cf0cacff771a86995449e3b7e4f1cd939574bf4cc5ab002fcae9c746fa0e", // Nahiajose16
+      "5a0f23803e6a3b703a720fec9799958d6bd8d4b1a76699f180277a167c1bd887"  // nahiajose16
+    ];
+
+    async function sha256(str) {
+      const buf = new TextEncoder().encode(str);
+      const hashBuf = await crypto.subtle.digest("SHA-256", buf);
+      return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function checkAuth() {
+      const saved = localStorage.getItem("nahia_portal_auth");
+      const overlay = document.getElementById("loginOverlay");
+      if (PORTAL_VALID.includes(saved)) {
+        if (overlay) overlay.style.display = "none";
+      } else {
+        if (overlay) overlay.style.display = "flex";
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const val = document.getElementById("pwdInput").value.trim();
+      const hash = await sha256(val);
+      if (PORTAL_VALID.includes(hash)) {
+        localStorage.setItem("nahia_portal_auth", hash);
+        document.getElementById("loginOverlay").style.display = "none";
+      } else {
+        document.getElementById("loginErr").style.display = "block";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("nahia_portal_auth");
+      location.reload();
+    }
+
+    checkAuth();
 
     updateMadridClock();
     setInterval(updateMadridClock, 30000);
