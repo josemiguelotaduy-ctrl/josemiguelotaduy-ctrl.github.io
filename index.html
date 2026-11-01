@@ -33,78 +33,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Auth Overlay */
-    #loginOverlay {
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    .loginBox {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 44px 38px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 16px 40px rgba(28, 25, 22, 0.05);
-      text-align: center;
-    }
-    .login-brand {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 26px;
-      font-weight: 600;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-    .login-sub {
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-      margin-bottom: 24px;
-    }
-    .loginBox input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--line);
-      border-radius: 9px;
-      font-size: 14px;
-      background: #FAFAFA;
-      color: var(--ink);
-      outline: none;
-      margin-bottom: 14px;
-      transition: border-color 0.15s ease;
-    }
-    .loginBox input:focus {
-      border-color: var(--accent);
-      background: #FFF;
-    }
-    .loginBox button {
-      width: 100%;
-      padding: 12px;
-      background: var(--accent);
-      color: #FFF;
-      border: none;
-      border-radius: 9px;
-      font-weight: 600;
-      font-size: 13.5px;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      transition: background 0.15s ease;
-    }
-    .loginBox button:hover {
-      background: var(--accent-hover);
-    }
-    .loginBox .err {
-      color: #B8473A;
-      font-size: 12px;
-      margin-top: 12px;
-      display: none;
-    }
+    
 
     /* Top Suite Navigation */
     .top-bar {
@@ -385,18 +314,7 @@
 </head>
 <body>
 
-  <!-- Single Auth Overlay -->
-  <div id="loginOverlay">
-    <div class="loginBox">
-      <div class="login-brand">N A H I A &nbsp; H O M E</div>
-      <div class="login-sub">Internal Management Suite · 3 Dashboards</div>
-      <form onsubmit="handleLogin(event)">
-        <input type="password" id="pwdInput" placeholder="Introduce la contraseña" autocomplete="current-password" autofocus required>
-        <button type="submit">Acceder al Portal</button>
-        <div id="loginErr" class="err">Contraseña incorrecta</div>
-      </form>
-    </div>
-  </div>
+  
 
   <!-- Suite Top Bar -->
   <header class="top-bar">
@@ -406,8 +324,7 @@
     </div>
     <div class="top-right">
       <span>Madrid: <b id="clockMadrid">--:--</b></span>
-      <a href="#" onclick="logout(); return false;" style="color:var(--muted); font-size:11px;">Cerrar sesión</a>
-    </div>
+      </div>
   </header>
 
   <!-- Hero Header -->
@@ -428,7 +345,7 @@
         <div>
           <div class="card-header">
             <div class="card-icon-wrap">📈</div>
-            <span class="card-tag">Operaciones</span>
+            <span class="card-tag" style="background:#E7F0E9; color:#2F5D41;">Acceso Libre</span>
           </div>
           <div class="card-pillar">FINANZAS &amp; RENTABILIDAD</div>
           <h2 class="card-title">P&amp;L Dashboard</h2>
@@ -456,7 +373,7 @@
         <div>
           <div class="card-header">
             <div class="card-icon-wrap">🎯</div>
-            <span class="card-tag">Adquisición</span>
+            <span class="card-tag" style="background:#FBF1E6; color:#8C581E;">🔒 Clave: Nahiajose16</span>
           </div>
           <div class="card-pillar">PERFORMANCE MARKETING</div>
           <h2 class="card-title">Ads Test Lab</h2>
@@ -484,7 +401,7 @@
         <div>
           <div class="card-header">
             <div class="card-icon-wrap">🎞️</div>
-            <span class="card-tag studio">Editorial &amp; Social</span>
+            <span class="card-tag" style="background:#FBF1E6; color:#8C581E;">🔒 Clave: Nahiajose16</span>
           </div>
           <div class="card-pillar">CONTENIDO ORGÁNICO</div>
           <h2 class="card-title">Social Studio</h2>
@@ -536,39 +453,7 @@
   </footer>
 
   <script>
-    const AUTH_HASH = "3f9fe0cf8466ed9e8e396636892f82d9e7e26b86c974f012efa21dd85d87296d"; // nahia2026
 
-    async function sha256(str) {
-      const buf = new TextEncoder().encode(str);
-      const hashBuf = await crypto.subtle.digest("SHA-256", buf);
-      return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, "0")).join("");
-    }
-
-    async function checkAuth() {
-      const saved = localStorage.getItem("nahia_auth");
-      if (saved === AUTH_HASH) {
-        document.getElementById("loginOverlay").style.display = "none";
-      } else {
-        document.getElementById("loginOverlay").style.display = "flex";
-      }
-    }
-
-    async function handleLogin(e) {
-      e.preventDefault();
-      const val = document.getElementById("pwdInput").value;
-      const hash = await sha256(val);
-      if (hash === AUTH_HASH) {
-        localStorage.setItem("nahia_auth", hash);
-        document.getElementById("loginOverlay").style.display = "none";
-      } else {
-        document.getElementById("loginErr").style.display = "block";
-      }
-    }
-
-    function logout() {
-      localStorage.removeItem("nahia_auth");
-      location.reload();
-    }
 
     function updateMadridClock() {
       const now = new Date();
@@ -577,7 +462,6 @@
       document.getElementById('clockMadrid').textContent = timeStr;
     }
 
-    checkAuth();
     updateMadridClock();
     setInterval(updateMadridClock, 30000);
   </script>
